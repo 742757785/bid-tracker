@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>茂名阳江招标信息</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        
+        .header {
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 { font-size: 20px; }
+        .header p { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+        
+        .search-section { padding: 12px 16px; background: white; }
+        .search-box { display: flex; gap: 8px; }
+        .search-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        .search-input:focus { border-color: #1976D2; }
+        .search-btn {
+            padding: 10px 20px;
+            background: #1976D2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .filters { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; }
+        .filter-chip {
+            padding: 6px 14px;
+            border-radius: 16px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            font-size: 12px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .filter-chip.active { background: #1976D2; color: white; border-color: #1976D2; }
+        
+        .stats {
+            padding: 10px 16px;
+            background: #E3F2FD;
+            color: #1976D2;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .update-time { font-size: 11px; color: #666; }
+        
+        .bid-list { padding: 12px; }
+        
+        .bid-card {
+            background: white;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            text-decoration: none;
+            display: block;
+            color: #333;
+        }
+        .bid-card:active { background: #f9f9f9; }
+        
+        .bid-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .bid-meta {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .bid-source {
+            font-size: 11px;
+            color: #1976D2;
+            background: #E3F2FD;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .bid-date { font-size: 11px; color: #999; }
+        .bid-tags { display: flex; gap: 6px; margin-top: 8px; }
+        .tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: white;
+        }
+        .tag-maoming { background: #4CAF50; }
+        .tag-yangjiang { background: #FF9800; }
+        .tag-category { background: #607D8B; }
+        
+        .open-icon {
+            float: right;
+            font-size: 16px;
+            color: #999;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1976D2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .tip-box {
+            margin: 12px;
+            padding: 16px;
+            background: #FFF8E1;
+            border-radius: 10px;
+            border-left: 4px solid #FFC107;
+        }
+        .tip-box h3 { font-size: 14px; color: #F57F17; margin-bottom: 8px; }
+        .tip-box p { font-size: 13px; color: #666; line-height: 1.6; }
+        
+        .source-section {
+            margin: 12px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .source-title {
+            padding: 14px 16px;
+            background: #f8f9fa;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #eee;
+        }
+        .source-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            text-decoration: none;
+            color: #333;
+        }
+        .source-link:last-child { border-bottom: none; }
+        .source-link:active { background: #f5f5f5; }
+        .source-icon { font-size: 20px; margin-right: 12px; }
+        .source-info { flex: 1; }
+        .source-name { font-size: 14px; font-weight: 500; }
+        .source-desc { font-size: 12px; color: #999; margin-top: 2px; }
+        .source-arrow { color: #ccc; font-size: 18px; }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📋 茂名·阳江 招标信息</h1>
+        <p>自动抓取 · 每日更新</p>
+    </div>
+
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="输入关键词搜索...">
+            <button class="search-btn" id="searchBtn">搜索</button>
+        </div>
+        <div class="filters">
+            <button class="filter-chip active" data-region="全部">全部地区</button>
+            <button class="filter-chip" data-region="茂名">茂名</button>
+            <button class="filter-chip" data-region="阳江">阳江</button>
+        </div>
+    </div>
+
+    <div class="stats">
+        <span id="countDisplay">加载中...</span>
+        <span class="update-time" id="updateTime"></span>
+    </div>
+
+    <div class="bid-list" id="bidList">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>正在加载数据...</p>
+        </div>
+    </div>
+
+    <div class="tip-box">
+        <h3>💡 使用提示</h3>
+        <p>
+            数据由 GitHub Actions 自动抓取，每天更新两次（8:00 和 18:00）。<br>
+            点击卡片可访问原文链接。<br>
+            下方可手动访问各官方网站。
+        </p>
+    </div>
+
+    <!-- 数据源导航 -->
+    <div class="source-section">
+        <div class="source-title">🔗 数据源网址导航</div>
+        
+        <a href="https://gdgpo.czt.gd.gov.cn/" target="_blank" class="source-link">
+            <span class="source-icon">🔗</span>
+            <div class="source-info">
+                <div class="source-name">广东省政府采购网</div>
+                <div class="source-desc">全省 | 政府采购</div>
+            </div>
+            <span class="source-arrow">›</span>
+        </a>
+        
+        <a href="http://www.maoming.gov.cn/" target="_blank" class="source-link">
+            <span class="source-icon">🔗</span>
+            <div class="source-info">
+                <div class="source-name">茂名市人民政府门户网站</div>
+                <div class="source-desc">茂名 | 综合信息</div>
+            </div>
+            <span class="source-arrow">›</span>
+        </a>
+        
+        <a href="http://czj.maoming.gov.cn/" target="_blank" class="source-link">
+            <span class="source-icon">🔗</span>
+            <div class="source-info">
+                <div class="source-name">茂名市财政局</div>
+                <div class="source-desc">茂名 | 政府采购</div>
+            </div>
+            <span class="source-arrow">›</span>
+        </a>
+        
+        <a href="http://zjj.maoming.gov.cn/" target="_blank" class="source-link">
+            <span class="source-icon">🔗</span>
+            <div class="source-info">
+                <div class="source-name">茂名市住房和城乡建设局</div>
+                <div class="source-desc">茂名 | 工程招标</div>
+            </div>
+            <span class="source-arrow">›</span>
+        </a>
+        
+        <a href="http://www.yangjiang.gov.cn/" target="_blank" class="source-link">
+            <span class="source-icon">🔗</span>
+            <div class="source-info">
+                <div class="source-name">阳江市人民政府门户网站</div>
+                <div class="source-desc">阳江 | 综合信息</div>
+            </div>
+            <span class="source-arrow">›</span>
+        </a>
+        
+        <a href="https://jy.yjggzy.cn:8088/" target="_blank" class="source-link">
+            <span class="source-icon">🔗</span>
+            <div class="source-info">
+                <div class="source-name">阳江市公共资源交易中心</div>
+                <div class="source-desc">阳江 | 产权交易</div>
+            </div>
+            <span class="source-arrow">›</span>
+        </a>
+        
+        <a href="http://zjj.yangjiang.gov.cn/" target="_blank" class="source-link">
+            <span class="source-icon">🔗</span>
+            <div class="source-info">
+                <div class="source-name">阳江市住房和城乡建设局</div>
+                <div class="source-desc">阳江 | 工程招标</div>
+            </div>
+            <span class="source-arrow">›</span>
+        </a>
+        
+        <a href="https://ggzy.gd.gov.cn/" target="_blank" class="source-link">
+            <span class="source-icon">🔗</span>
+            <div class="source-info">
+                <div class="source-name">广东省公共资源交易平台</div>
+                <div class="source-desc">全省 | 综合交易</div>
+            </div>
+            <span class="source-arrow">›</span>
+        </a>
+        
+        <a href="https://www.ccgp.gov.cn/" target="_blank" class="source-link">
+            <span class="source-icon">🔗</span>
+            <div class="source-info">
+                <div class="source-name">中国政府采购网</div>
+                <div class="source-desc">全国 | 政府采购</div>
+            </div>
+            <span class="source-arrow">›</span>
+        </a>
+    </div>
+
+    <div class="footer">
+        <p>数据来源：各官方网站 | 自动抓取</p>
+    </div>
+
+    <script>
+        let allBids = [];
+        let currentRegion = '全部';
+        let searchKeyword = '';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            
+            document.getElementById('searchBtn').addEventListener('click', () => {
+                searchKeyword = document.getElementById('searchInput').value.trim().toLowerCase();
+                filterAndRender();
+            });
+
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchKeyword = e.target.value.trim().toLowerCase();
+                    filterAndRender();
+                }
+            });
+
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    currentRegion = this.dataset.region;
+                    filterAndRender();
+                });
+            });
+        });
+
+        // 加载数据
+        async function loadData() {
+            try {
+                // GitHub Pages 上的 data.json 文件
+                const response = await fetch('data.json?t=' + Date.now());
+                const data = await response.json();
+                
+                allBids = data.bids || [];
+                document.getElementById('updateTime').textContent = '更新: ' + (data.updateTimeCN || '未知');
+                
+                filterAndRender();
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                document.getElementById('bidList').innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 48px; margin-bottom: 12px;">⚠️</div>
+                        <p>数据加载失败</p>
+                        <p style="font-size: 12px; margin-top: 8px; color: #999;">
+                            请确保已部署到 GitHub Pages 或 Netlify<br>
+                            并运行 GitHub Actions 抓取数据
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        // 筛选并渲染
+        function filterAndRender() {
+            let filtered = allBids;
+            
+            if (currentRegion !== '全部') {
+                filtered = filtered.filter(bid => bid.region === currentRegion);
+            }
+            
+            if (searchKeyword) {
+                filtered = filtered.filter(bid => 
+                    bid.title.toLowerCase().includes(searchKeyword) ||
+                    bid.source.toLowerCase().includes(searchKeyword) ||
+                    (bid.category && bid.category.includes(searchKeyword))
+                );
+            }
+            
+            renderBids(filtered);
+            document.getElementById('countDisplay').textContent = `共 ${filtered.length} 条招标信息`;
+        }
+
+        // 渲染列表
+        function renderBids(bids) {
+            const list = document.getElementById('bidList');
+            
+            if (bids.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 48px; margin-bottom: 12px;">📭</div>
+                        <p>暂无匹配的招标信息</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = bids.map(bid => {
+                const regionClass = bid.region === '茂名' ? 'tag-maoming' : 'tag-yangjiang';
+                
+                return `
+                    <a href="${bid.url}" target="_blank" class="bid-card">
+                        <div class="open-icon">↗</div>
+                        <div class="bid-title">${bid.title}</div>
+                        <div class="bid-meta">
+                            <span class="bid-source">${bid.source}</span>
+                            <span class="bid-date">${bid.date || '最新'}</span>
+                        </div>
+                        <div class="bid-tags">
+                            <span class="tag ${regionClass}">${bid.region}</span>
+                            <span class="tag tag-category">${bid.category || '其他'}</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

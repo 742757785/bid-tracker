@@ -1,0 +1,12 @@
+{
+  "name": "bid-tracker",
+  "version": "1.0.0",
+  "description": "茂名阳江招标信息自动抓取",
+  "scripts": {
+    "fetch": "node fetch-data.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.0",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}
