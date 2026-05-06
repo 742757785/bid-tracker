@@ -1,0 +1,31 @@
+name: 抓取招标信息
+
+on:
+  schedule:
+    - cron: '0 0 8,18 * *'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm init -y && npm install node-fetch cheerio
+      
+      - name: Fetch bid data
+        run: node fetch-data.js
+      
+      - name: Commit and push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data.json
+          git diff --staged --quiet || git commit -m "更新招标数据"
+          git push
