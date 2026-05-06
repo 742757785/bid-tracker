@@ -9,11 +9,4 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npm init -y && npm install node-fetch cheerio
-      - run: sed -i 's/\r$//' fetch-data.js
-      - run: node fetch-data.js
-      - run: git config user.email "action@github.com"
-      - run: git config user.name "Action"
-      - run: git add data.json
-      - run: "git commit -m update || true"
-      - run: git push
+      - run: bash run.sh
