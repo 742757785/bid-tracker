@@ -10,10 +10,10 @@ jobs:
         with:
           node-version: 18
       - run: npm init -y && npm install node-fetch cheerio
+      - run: sed -i 's/\r$//' fetch-data.js
       - run: node fetch-data.js
-      - run: |
-          git config user.email "action@github.com"
-          git config user.name "Action"
-          git add data.json
-          git commit -m "update" || true
-          git push
+      - run: git config user.email "action@github.com"
+      - run: git config user.name "Action"
+      - run: git add data.json
+      - run: "git commit -m update || true"
+      - run: git push
