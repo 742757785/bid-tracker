@@ -1,0 +1,19 @@
+name: 抓取招标信息
+on:
+  workflow_dispatch:
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm init -y && npm install node-fetch cheerio
+      - run: node fetch-data.js
+      - run: |
+          git config user.email "action@github.com"
+          git config user.name "Action"
+          git add data.json
+          git commit -m "update" || true
+          git push
